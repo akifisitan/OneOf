@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -37,7 +38,7 @@ namespace OneOf
                 _value0! :
                 throw new InvalidOperationException($"Cannot return as T0 as result is T{_index}");
 
-        
+
 
         public void Switch(Action<T0>? f0)
         {
@@ -45,6 +46,15 @@ namespace OneOf
             {
                 f0(_value0!);
                 return;
+            }
+            throw new InvalidOperationException();
+        }
+
+        public Task Switch(Func<T0, Task>? f0)
+        {
+            if (_index == 0 && f0 != null)
+            {
+                return f0(_value0!);
             }
             throw new InvalidOperationException();
         }
@@ -58,9 +68,9 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
-        
 
-        
+
+
 
         bool Equals(OneOfBase<T0> other) =>
             _index == other._index &&

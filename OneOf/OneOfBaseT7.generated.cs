@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -93,7 +94,7 @@ namespace OneOf
                 _value7! :
                 throw new InvalidOperationException($"Cannot return as T7 as result is T{_index}");
 
-        
+
 
         public void Switch(Action<T0>? f0, Action<T1>? f1, Action<T2>? f2, Action<T3>? f3, Action<T4>? f4, Action<T5>? f5, Action<T6>? f6, Action<T7>? f7)
         {
@@ -140,6 +141,43 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
+        public Task Switch(Func<T0, Task>? f0, Func<T1, Task>? f1, Func<T2, Task>? f2, Func<T3, Task>? f3, Func<T4, Task>? f4, Func<T5, Task>? f5, Func<T6, Task>? f6, Func<T7, Task>? f7)
+        {
+            if (_index == 0 && f0 != null)
+            {
+                return f0(_value0!);
+            }
+            if (_index == 1 && f1 != null)
+            {
+                return f1(_value1!);
+            }
+            if (_index == 2 && f2 != null)
+            {
+                return f2(_value2!);
+            }
+            if (_index == 3 && f3 != null)
+            {
+                return f3(_value3!);
+            }
+            if (_index == 4 && f4 != null)
+            {
+                return f4(_value4!);
+            }
+            if (_index == 5 && f5 != null)
+            {
+                return f5(_value5!);
+            }
+            if (_index == 6 && f6 != null)
+            {
+                return f6(_value6!);
+            }
+            if (_index == 7 && f7 != null)
+            {
+                return f7(_value7!);
+            }
+            throw new InvalidOperationException();
+        }
+
         public TResult Match<TResult>(Func<T0, TResult>? f0, Func<T1, TResult>? f1, Func<T2, TResult>? f2, Func<T3, TResult>? f3, Func<T4, TResult>? f4, Func<T5, TResult>? f5, Func<T6, TResult>? f6, Func<T7, TResult>? f7)
         {
             if (_index == 0 && f0 != null)
@@ -177,9 +215,9 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
-        
 
-        
+
+
 
 		public bool TryPickT0([MaybeNullWhen(false)] out T0 value, [MaybeNullWhen(true)] out OneOf<T1, T2, T3, T4, T5, T6, T7> remainder)
 		{
@@ -198,7 +236,7 @@ namespace OneOf
             };
 			return this.IsT0;
 		}
-        
+
 		public bool TryPickT1([MaybeNullWhen(false)] out T1 value, [MaybeNullWhen(true)] out OneOf<T0, T2, T3, T4, T5, T6, T7> remainder)
 		{
 			value = IsT1 ? AsT1 : default;
@@ -216,7 +254,7 @@ namespace OneOf
             };
 			return this.IsT1;
 		}
-        
+
 		public bool TryPickT2([MaybeNullWhen(false)] out T2 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T3, T4, T5, T6, T7> remainder)
 		{
 			value = IsT2 ? AsT2 : default;
@@ -234,7 +272,7 @@ namespace OneOf
             };
 			return this.IsT2;
 		}
-        
+
 		public bool TryPickT3([MaybeNullWhen(false)] out T3 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T4, T5, T6, T7> remainder)
 		{
 			value = IsT3 ? AsT3 : default;
@@ -252,7 +290,7 @@ namespace OneOf
             };
 			return this.IsT3;
 		}
-        
+
 		public bool TryPickT4([MaybeNullWhen(false)] out T4 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T5, T6, T7> remainder)
 		{
 			value = IsT4 ? AsT4 : default;
@@ -270,7 +308,7 @@ namespace OneOf
             };
 			return this.IsT4;
 		}
-        
+
 		public bool TryPickT5([MaybeNullWhen(false)] out T5 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T6, T7> remainder)
 		{
 			value = IsT5 ? AsT5 : default;
@@ -288,7 +326,7 @@ namespace OneOf
             };
 			return this.IsT5;
 		}
-        
+
 		public bool TryPickT6([MaybeNullWhen(false)] out T6 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T7> remainder)
 		{
 			value = IsT6 ? AsT6 : default;
@@ -306,7 +344,7 @@ namespace OneOf
             };
 			return this.IsT6;
 		}
-        
+
 		public bool TryPickT7([MaybeNullWhen(false)] out T7 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6> remainder)
 		{
 			value = IsT7 ? AsT7 : default;

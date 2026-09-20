@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -53,7 +54,7 @@ namespace OneOf
                 _value2! :
                 throw new InvalidOperationException($"Cannot return as T2 as result is T{_index}");
 
-        
+
 
         public void Switch(Action<T0>? f0, Action<T1>? f1, Action<T2>? f2)
         {
@@ -75,6 +76,23 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
+        public Task Switch(Func<T0, Task>? f0, Func<T1, Task>? f1, Func<T2, Task>? f2)
+        {
+            if (_index == 0 && f0 != null)
+            {
+                return f0(_value0!);
+            }
+            if (_index == 1 && f1 != null)
+            {
+                return f1(_value1!);
+            }
+            if (_index == 2 && f2 != null)
+            {
+                return f2(_value2!);
+            }
+            throw new InvalidOperationException();
+        }
+
         public TResult Match<TResult>(Func<T0, TResult>? f0, Func<T1, TResult>? f1, Func<T2, TResult>? f2)
         {
             if (_index == 0 && f0 != null)
@@ -92,9 +110,9 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
-        
 
-        
+
+
 
 		public bool TryPickT0([MaybeNullWhen(false)] out T0 value, [MaybeNullWhen(true)] out OneOf<T1, T2> remainder)
 		{
@@ -108,7 +126,7 @@ namespace OneOf
             };
 			return this.IsT0;
 		}
-        
+
 		public bool TryPickT1([MaybeNullWhen(false)] out T1 value, [MaybeNullWhen(true)] out OneOf<T0, T2> remainder)
 		{
 			value = IsT1 ? AsT1 : default;
@@ -121,7 +139,7 @@ namespace OneOf
             };
 			return this.IsT1;
 		}
-        
+
 		public bool TryPickT2([MaybeNullWhen(false)] out T2 value, [MaybeNullWhen(true)] out OneOf<T0, T1> remainder)
 		{
 			value = IsT2 ? AsT2 : default;

@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -45,6 +46,15 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
+        public Task Switch(Func<T0, Task>? f0)
+        {
+            if (_index == 0 && f0 != null)
+            {
+                return f0(_value0!);
+            }
+            throw new InvalidOperationException();
+        }
+
         public TResult Match<TResult>(Func<T0, TResult>? f0)
         {
             if (_index == 0 && f0 != null)
@@ -56,7 +66,7 @@ namespace OneOf
 
         public static OneOf<T0> FromT0(T0 input) => input;
 
-        
+
         public OneOf<TResult> MapT0<TResult>(Func<T0, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -66,6 +76,19 @@ namespace OneOf
             return _index switch
             {
                 0 => mapFunc(_value0!),
+                _ => throw new InvalidOperationException()
+            };
+        }
+
+        public async Task<OneOf<TResult>> MapT0<TResult>(Func<T0, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => await mapFunc(_value0!).ConfigureAwait(false),
                 _ => throw new InvalidOperationException()
             };
         }

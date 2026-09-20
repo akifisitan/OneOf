@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -45,7 +46,7 @@ namespace OneOf
                 _value1! :
                 throw new InvalidOperationException($"Cannot return as T1 as result is T{_index}");
 
-        
+
 
         public void Switch(Action<T0>? f0, Action<T1>? f1)
         {
@@ -58,6 +59,19 @@ namespace OneOf
             {
                 f1(_value1!);
                 return;
+            }
+            throw new InvalidOperationException();
+        }
+
+        public Task Switch(Func<T0, Task>? f0, Func<T1, Task>? f1)
+        {
+            if (_index == 0 && f0 != null)
+            {
+                return f0(_value0!);
+            }
+            if (_index == 1 && f1 != null)
+            {
+                return f1(_value1!);
             }
             throw new InvalidOperationException();
         }
@@ -75,9 +89,9 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
-        
 
-        
+
+
 
 		public bool TryPickT0([MaybeNullWhen(false)] out T0 value, [MaybeNullWhen(true)] out T1 remainder)
 		{
@@ -90,7 +104,7 @@ namespace OneOf
             };
 			return this.IsT0;
 		}
-        
+
 		public bool TryPickT1([MaybeNullWhen(false)] out T1 value, [MaybeNullWhen(true)] out T0 remainder)
 		{
 			value = IsT1 ? AsT1 : default;

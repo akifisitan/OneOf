@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -213,6 +214,63 @@ namespace OneOf
             throw new InvalidOperationException();
         }
 
+        public Task Switch(Func<T0, Task>? f0, Func<T1, Task>? f1, Func<T2, Task>? f2, Func<T3, Task>? f3, Func<T4, Task>? f4, Func<T5, Task>? f5, Func<T6, Task>? f6, Func<T7, Task>? f7, Func<T8, Task>? f8, Func<T9, Task>? f9, Func<T10, Task>? f10, Func<T11, Task>? f11, Func<T12, Task>? f12)
+        {
+            if (_index == 0 && f0 != null)
+            {
+                return f0(_value0!);
+            }
+            if (_index == 1 && f1 != null)
+            {
+                return f1(_value1!);
+            }
+            if (_index == 2 && f2 != null)
+            {
+                return f2(_value2!);
+            }
+            if (_index == 3 && f3 != null)
+            {
+                return f3(_value3!);
+            }
+            if (_index == 4 && f4 != null)
+            {
+                return f4(_value4!);
+            }
+            if (_index == 5 && f5 != null)
+            {
+                return f5(_value5!);
+            }
+            if (_index == 6 && f6 != null)
+            {
+                return f6(_value6!);
+            }
+            if (_index == 7 && f7 != null)
+            {
+                return f7(_value7!);
+            }
+            if (_index == 8 && f8 != null)
+            {
+                return f8(_value8!);
+            }
+            if (_index == 9 && f9 != null)
+            {
+                return f9(_value9!);
+            }
+            if (_index == 10 && f10 != null)
+            {
+                return f10(_value10!);
+            }
+            if (_index == 11 && f11 != null)
+            {
+                return f11(_value11!);
+            }
+            if (_index == 12 && f12 != null)
+            {
+                return f12(_value12!);
+            }
+            throw new InvalidOperationException();
+        }
+
         public TResult Match<TResult>(Func<T0, TResult>? f0, Func<T1, TResult>? f1, Func<T2, TResult>? f2, Func<T3, TResult>? f3, Func<T4, TResult>? f4, Func<T5, TResult>? f5, Func<T6, TResult>? f6, Func<T7, TResult>? f7, Func<T8, TResult>? f8, Func<T9, TResult>? f9, Func<T10, TResult>? f10, Func<T11, TResult>? f11, Func<T12, TResult>? f12)
         {
             if (_index == 0 && f0 != null)
@@ -284,7 +342,7 @@ namespace OneOf
         public static OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> FromT11(T11 input) => input;
         public static OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> FromT12(T12 input) => input;
 
-        
+
         public OneOf<TResult, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> MapT0<TResult>(Func<T0, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -309,7 +367,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<TResult, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> MapT0<TResult>(Func<T0, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => await mapFunc(_value0!).ConfigureAwait(false),
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, TResult, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> MapT1<TResult>(Func<T1, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -334,7 +417,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, TResult, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> MapT1<TResult>(Func<T1, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => await mapFunc(_value1!).ConfigureAwait(false),
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, TResult, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> MapT2<TResult>(Func<T2, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -359,7 +467,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, TResult, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> MapT2<TResult>(Func<T2, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => await mapFunc(_value2!).ConfigureAwait(false),
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, TResult, T4, T5, T6, T7, T8, T9, T10, T11, T12> MapT3<TResult>(Func<T3, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -384,7 +517,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, TResult, T4, T5, T6, T7, T8, T9, T10, T11, T12>> MapT3<TResult>(Func<T3, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => await mapFunc(_value3!).ConfigureAwait(false),
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, TResult, T5, T6, T7, T8, T9, T10, T11, T12> MapT4<TResult>(Func<T4, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -409,7 +567,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, TResult, T5, T6, T7, T8, T9, T10, T11, T12>> MapT4<TResult>(Func<T4, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => await mapFunc(_value4!).ConfigureAwait(false),
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, TResult, T6, T7, T8, T9, T10, T11, T12> MapT5<TResult>(Func<T5, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -434,7 +617,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, TResult, T6, T7, T8, T9, T10, T11, T12>> MapT5<TResult>(Func<T5, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => await mapFunc(_value5!).ConfigureAwait(false),
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, TResult, T7, T8, T9, T10, T11, T12> MapT6<TResult>(Func<T6, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -459,7 +667,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, TResult, T7, T8, T9, T10, T11, T12>> MapT6<TResult>(Func<T6, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => await mapFunc(_value6!).ConfigureAwait(false),
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, T6, TResult, T8, T9, T10, T11, T12> MapT7<TResult>(Func<T7, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -484,7 +717,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, T6, TResult, T8, T9, T10, T11, T12>> MapT7<TResult>(Func<T7, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => await mapFunc(_value7!).ConfigureAwait(false),
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, T6, T7, TResult, T9, T10, T11, T12> MapT8<TResult>(Func<T8, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -509,7 +767,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, T6, T7, TResult, T9, T10, T11, T12>> MapT8<TResult>(Func<T8, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => await mapFunc(_value8!).ConfigureAwait(false),
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, TResult, T10, T11, T12> MapT9<TResult>(Func<T9, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -534,7 +817,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, TResult, T10, T11, T12>> MapT9<TResult>(Func<T9, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => await mapFunc(_value9!).ConfigureAwait(false),
+                10 => _value10!,
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult, T11, T12> MapT10<TResult>(Func<T10, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -559,7 +867,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, TResult, T11, T12>> MapT10<TResult>(Func<T10, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => await mapFunc(_value10!).ConfigureAwait(false),
+                11 => _value11!,
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult, T12> MapT11<TResult>(Func<T11, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -584,7 +917,32 @@ namespace OneOf
                 _ => throw new InvalidOperationException()
             };
         }
-            
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TResult, T12>> MapT11<TResult>(Func<T11, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => await mapFunc(_value11!).ConfigureAwait(false),
+                12 => _value12!,
+                _ => throw new InvalidOperationException()
+            };
+        }
+
         public OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult> MapT12<TResult>(Func<T12, TResult> mapFunc)
         {
             if (mapFunc == null)
@@ -606,6 +964,31 @@ namespace OneOf
                 10 => _value10!,
                 11 => _value11!,
                 12 => mapFunc(_value12!),
+                _ => throw new InvalidOperationException()
+            };
+        }
+
+        public async Task<OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TResult>> MapT12<TResult>(Func<T12, Task<TResult>> mapFunc)
+        {
+            if (mapFunc == null)
+            {
+                throw new ArgumentNullException(nameof(mapFunc));
+            }
+            return _index switch
+            {
+                0 => _value0!,
+                1 => _value1!,
+                2 => _value2!,
+                3 => _value3!,
+                4 => _value4!,
+                5 => _value5!,
+                6 => _value6!,
+                7 => _value7!,
+                8 => _value8!,
+                9 => _value9!,
+                10 => _value10!,
+                11 => _value11!,
+                12 => await mapFunc(_value12!).ConfigureAwait(false),
                 _ => throw new InvalidOperationException()
             };
         }
@@ -632,7 +1015,7 @@ namespace OneOf
             };
 			return this.IsT0;
 		}
-        
+
 		public bool TryPickT1([MaybeNullWhen(false)] out T1 value, [MaybeNullWhen(true)] out OneOf<T0, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT1 ? AsT1 : default;
@@ -655,7 +1038,7 @@ namespace OneOf
             };
 			return this.IsT1;
 		}
-        
+
 		public bool TryPickT2([MaybeNullWhen(false)] out T2 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT2 ? AsT2 : default;
@@ -678,7 +1061,7 @@ namespace OneOf
             };
 			return this.IsT2;
 		}
-        
+
 		public bool TryPickT3([MaybeNullWhen(false)] out T3 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T4, T5, T6, T7, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT3 ? AsT3 : default;
@@ -701,7 +1084,7 @@ namespace OneOf
             };
 			return this.IsT3;
 		}
-        
+
 		public bool TryPickT4([MaybeNullWhen(false)] out T4 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T5, T6, T7, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT4 ? AsT4 : default;
@@ -724,7 +1107,7 @@ namespace OneOf
             };
 			return this.IsT4;
 		}
-        
+
 		public bool TryPickT5([MaybeNullWhen(false)] out T5 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T6, T7, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT5 ? AsT5 : default;
@@ -747,7 +1130,7 @@ namespace OneOf
             };
 			return this.IsT5;
 		}
-        
+
 		public bool TryPickT6([MaybeNullWhen(false)] out T6 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T7, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT6 ? AsT6 : default;
@@ -770,7 +1153,7 @@ namespace OneOf
             };
 			return this.IsT6;
 		}
-        
+
 		public bool TryPickT7([MaybeNullWhen(false)] out T7 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6, T8, T9, T10, T11, T12> remainder)
 		{
 			value = IsT7 ? AsT7 : default;
@@ -793,7 +1176,7 @@ namespace OneOf
             };
 			return this.IsT7;
 		}
-        
+
 		public bool TryPickT8([MaybeNullWhen(false)] out T8 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T9, T10, T11, T12> remainder)
 		{
 			value = IsT8 ? AsT8 : default;
@@ -816,7 +1199,7 @@ namespace OneOf
             };
 			return this.IsT8;
 		}
-        
+
 		public bool TryPickT9([MaybeNullWhen(false)] out T9 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T10, T11, T12> remainder)
 		{
 			value = IsT9 ? AsT9 : default;
@@ -839,7 +1222,7 @@ namespace OneOf
             };
 			return this.IsT9;
 		}
-        
+
 		public bool TryPickT10([MaybeNullWhen(false)] out T10 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T11, T12> remainder)
 		{
 			value = IsT10 ? AsT10 : default;
@@ -862,7 +1245,7 @@ namespace OneOf
             };
 			return this.IsT10;
 		}
-        
+
 		public bool TryPickT11([MaybeNullWhen(false)] out T11 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T12> remainder)
 		{
 			value = IsT11 ? AsT11 : default;
@@ -885,7 +1268,7 @@ namespace OneOf
             };
 			return this.IsT11;
 		}
-        
+
 		public bool TryPickT12([MaybeNullWhen(false)] out T12 value, [MaybeNullWhen(true)] out OneOf<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> remainder)
 		{
 			value = IsT12 ? AsT12 : default;

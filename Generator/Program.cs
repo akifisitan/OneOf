@@ -46,6 +46,7 @@ string GetContent(bool isStruct, int i) {
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -108,6 +109,16 @@ namespace OneOf
             throw new InvalidOperationException();
         }}
 
+        public Task Switch({RangeJoined(", ", e => $"Func<T{e}, Task>? f{e}")})
+        {{
+            {RangeJoined(@"
+            ", j => @$"if (_index == {j} && f{j} != null)
+            {{
+                return f{j}(_value{j}!);
+            }}")}
+            throw new InvalidOperationException();
+        }}
+
         public TResult Match<TResult>({RangeJoined(", ", e => $"Func<T{e}, TResult>? f{e}")})
         {{
             {RangeJoined(@"
@@ -139,6 +150,23 @@ namespace OneOf
                 ", (x, k) =>
                     x == bindToType ?
                         $"{k} => mapFunc(_value{k}!)," :
+                        $"{k} => _value{k}!,")}
+                _ => throw new InvalidOperationException()
+            }};
+        }}
+
+        public async Task<OneOf<{resultArgsPrinted}>> Map{bindToType}<TResult>(Func<{bindToType}, Task<TResult>> mapFunc)
+        {{
+            if (mapFunc == null)
+            {{
+                throw new ArgumentNullException(nameof(mapFunc));
+            }}
+            return _index switch
+            {{
+                {genericArgs.Joined(@"
+                ", (x, k) =>
+                    x == bindToType ?
+                        $"{k} => await mapFunc(_value{k}!).ConfigureAwait(false)," :
                         $"{k} => _value{k}!,")}
                 _ => throw new InvalidOperationException()
             }};
@@ -221,7 +249,7 @@ namespace OneOf
     }}
 }}");
 
-    return sb.ToString().Replace("\r\n", "\n");
+    return string.Join("\n", sb.ToString().Replace("\r\n", "\n").Split('\n').Select(line => line.TrimEnd()));
 }
 
 public static class Extensions {
