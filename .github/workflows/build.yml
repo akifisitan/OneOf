@@ -1,0 +1,48 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore OneOf.slnx
+
+      - name: Build
+        run: dotnet build OneOf.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test OneOf.slnx --configuration Release --no-build --no-restore
+
+      - name: Verify generated unions
+        run: dotnet run --project Generator/Generator.csproj --configuration Release --no-build -- .
+
+      - name: Check generated diff
+        run: git diff --exit-code -- OneOf/*.generated.cs OneOf.Extended/*.generated.cs
+
+      - name: Pack OneOf
+        run: dotnet pack OneOf/OneOf.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Pack OneOf.Extended
+        run: dotnet pack OneOf.Extended/OneOf.Extended.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - name: Pack OneOf.SourceGenerator
+        run: dotnet pack OneOf.SourceGenerator/OneOf.SourceGenerator.csproj --configuration Release --no-build --no-restore --output artifacts
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: packages
+          path: artifacts/*.*nupkg
+          if-no-files-found: error

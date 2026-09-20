@@ -1,30 +1,35 @@
-﻿using System.IO;
-using System.Text;
-using static System.IO.Path;
-using static System.Reflection.Assembly;
-using static System.Linq.Enumerable;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using static System.Linq.Enumerable;
 
-var sourceRoot = GetFullPath(Combine(GetDirectoryName(GetExecutingAssembly().Location)!, @"..\..\..\.."));
+if (args.Length > 1)
+{
+    throw new ArgumentException("Specify at most one repository root.");
+}
+
+var sourceRoot = args.Length == 1
+    ? Path.GetFullPath(args[0])
+    : Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".."));
 
 for (var i = 1; i < 10; i++) {
     var output = GetContent(true, i);
-    var outpath = Combine(sourceRoot, $"OneOf\\OneOfT{i - 1}.generated.cs");
+    var outpath = Path.Combine(sourceRoot, "OneOf", $"OneOfT{i - 1}.generated.cs");
     File.WriteAllText(outpath, output);
 
     var output2 = GetContent(false, i);
-    var outpath2 = Combine(sourceRoot, $"OneOf\\OneOfBaseT{i - 1}.generated.cs");
+    var outpath2 = Path.Combine(sourceRoot, "OneOf", $"OneOfBaseT{i - 1}.generated.cs");
     File.WriteAllText(outpath2, output2);
 }
 
 for (var i = 10; i < 33; i++) {
     var output3 = GetContent(true, i);
-    var outpath3 = Combine(sourceRoot, $"OneOf.Extended\\OneOfT{i - 1}.generated.cs");
+    var outpath3 = Path.Combine(sourceRoot, "OneOf.Extended", $"OneOfT{i - 1}.generated.cs");
     File.WriteAllText(outpath3, output3);
 
     var output4 = GetContent(false, i);
-    var outpath4 = Combine(sourceRoot, $"OneOf.Extended\\OneOfBaseT{i - 1}.generated.cs");
+    var outpath4 = Path.Combine(sourceRoot, "OneOf.Extended", $"OneOfBaseT{i - 1}.generated.cs");
     File.WriteAllText(outpath4, output4);
 }
 
@@ -37,7 +42,10 @@ string GetContent(bool isStruct, int i) {
     var genericArg = genericArgs.Joined(", ");
     var sb = new StringBuilder();
     
-    sb.Append(@$"using System;
+    sb.Append(@$"#nullable enable
+
+using System;
+using System.Diagnostics.CodeAnalysis;
 using static OneOf.Functions;
 
 namespace OneOf
@@ -45,11 +53,11 @@ namespace OneOf
     public {IfStruct("readonly struct", "class")} {className}<{genericArg}> : IOneOf
     {{
         {RangeJoined(@"
-        ", j => $"readonly T{j} _value{j};")}
+        ", j => $"readonly T{j}? _value{j};")}
         readonly int _index;
 
         {IfStruct( // constructor
-        $@"OneOf(int index, {RangeJoined(", ", j => $"T{j} value{j} = default")})
+        $@"OneOf(int index, {RangeJoined(", ", j => $"T{j}? value{j} = default")})
         {{
             _index = index;
             {RangeJoined(@"
@@ -67,7 +75,7 @@ namespace OneOf
         }}"
         )}
 
-        public object Value =>
+        public object? Value =>
             _index switch
             {{
                 {RangeJoined(@"
@@ -83,29 +91,29 @@ namespace OneOf
         {RangeJoined(@"
         ", j => $@"public T{j} AsT{j} =>
             _index == {j} ?
-                _value{j} :
+                _value{j}! :
                 throw new InvalidOperationException($""Cannot return as T{j} as result is T{{_index}}"");")}
 
         {IfStruct(RangeJoined(@"
         ", j => $"public static implicit operator {className}<{genericArg}>(T{j} t) => new {className}<{genericArg}>({j}, value{j}: t);"))}
 
-        public void Switch({RangeJoined(", ", e => $"Action<T{e}> f{e}")})
+        public void Switch({RangeJoined(", ", e => $"Action<T{e}>? f{e}")})
         {{
             {RangeJoined(@"
             ", j => @$"if (_index == {j} && f{j} != null)
             {{
-                f{j}(_value{j});
+                f{j}(_value{j}!);
                 return;
             }}")}
             throw new InvalidOperationException();
         }}
 
-        public TResult Match<TResult>({RangeJoined(", ", e => $"Func<T{e}, TResult> f{e}")})
+        public TResult Match<TResult>({RangeJoined(", ", e => $"Func<T{e}, TResult>? f{e}")})
         {{
             {RangeJoined(@"
             ", j => $@"if (_index == {j} && f{j} != null)
             {{
-                return f{j}(_value{j});
+                return f{j}(_value{j}!);
             }}")}
             throw new InvalidOperationException();
         }}
@@ -130,8 +138,8 @@ namespace OneOf
                 {genericArgs.Joined(@"
                 ", (x, k) =>
                     x == bindToType ?
-                        $"{k} => mapFunc(As{x})," :
-                        $"{k} => As{x},")}
+                        $"{k} => mapFunc(_value{k}!)," :
+                        $"{k} => _value{k}!,")}
                 _ => throw new InvalidOperationException()
             }};
         }}";
@@ -145,7 +153,7 @@ namespace OneOf
                 var genericArgWithSkip = Range(0, i).ExceptSingle(j).Joined(", ", e => $"T{e}");
                 var remainderType = i == 2 ? genericArgWithSkip : $"OneOf<{genericArgWithSkip}>";
                 return $@"
-		public bool TryPickT{j}(out T{j} value, out {remainderType} remainder)
+		public bool TryPickT{j}([MaybeNullWhen(false)] out T{j} value, [MaybeNullWhen(true)] out {remainderType} remainder)
 		{{
 			value = IsT{j} ? AsT{j} : default;
             remainder = _index switch
@@ -154,7 +162,7 @@ namespace OneOf
                 ", k => 
                     k == j ?
                         $"{k} => default," :
-                        $"{k} => AsT{k},")}
+                        $"{k} => _value{k}!,")}
                 _ => throw new InvalidOperationException()
             }};
 			return this.IsT{j};
@@ -173,7 +181,7 @@ namespace OneOf
                 _ => false
             }};
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {{
             if (ReferenceEquals(null, obj))
             {{
@@ -213,7 +221,7 @@ namespace OneOf
     }}
 }}");
 
-    return sb.ToString();
+    return sb.ToString().Replace("\r\n", "\n");
 }
 
 public static class Extensions {

@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="Generator/Generator.csproj" />
+  <Project Path="OneOf.Extended/OneOf.Extended.csproj" />
+  <Project Path="OneOf.SourceGenerator.AnalyzerTests/OneOf.SourceGenerator.AnalyzerTests.csproj" />
+  <Project Path="OneOf.SourceGenerator.Tests/OneOf.SourceGenerator.Tests.csproj" />
+  <Project Path="OneOf.SourceGenerator/OneOf.SourceGenerator.csproj" />
+  <Project Path="OneOf.Tests/OneOf.Tests.csproj">
+    <BuildDependency Project="OneOf/OneOf.csproj" />
+  </Project>
+  <Project Path="OneOf/OneOf.csproj" />
+</Solution>

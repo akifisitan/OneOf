@@ -21,26 +21,36 @@ namespace OneOf.Tests
             }
         }
 
-        [TestCase("en-NZ", ExpectedResult = "System.DateTime: 2/01/2019 1:02:03 AM")]
-        [TestCase("en-US", ExpectedResult = "System.DateTime: 1/2/2019 1:02:03 AM")]
-        public string LeftSideFormatsWithCurrentCulture(string cultureName)
+        [TestCase("en-NZ")]
+        [TestCase("en-US")]
+        public void LeftSideFormatsWithCurrentCulture(string cultureName)
         {
-            return RunInCulture(new CultureInfo(cultureName, false), () =>
-            {
-                OneOf<DateTime, string> a = new DateTime(2019, 1, 2, 1, 2, 3);
-                return a.ToString();
-            });
+            var culture = new CultureInfo(cultureName, false);
+            var date = new DateTime(2019, 1, 2, 1, 2, 3);
+            var expectedResult = "System.DateTime: " + date.ToString(culture);
+
+            Assert.AreEqual(expectedResult,
+                RunInCulture(culture, () =>
+                {
+                    var a = (OneOf<DateTime, string>)date;
+                    return a.ToString();
+                }));
         }
 
-        [TestCase("en-NZ", ExpectedResult = "System.DateTime: 2/01/2019 1:02:03 AM")]
-        [TestCase("en-US", ExpectedResult = "System.DateTime: 1/2/2019 1:02:03 AM")]
-        public string RightSideFormatsWithCurrentCulture(string cultureName)
+        [TestCase("en-NZ")]
+        [TestCase("en-US")]
+        public void RightSideFormatsWithCurrentCulture(string cultureName)
         {
-            return RunInCulture(new CultureInfo(cultureName, false), () =>
-            {
-                OneOf<string, DateTime> a = new DateTime(2019, 1, 2, 1, 2, 3);
-                return a.ToString();
-            });
+            var culture = new CultureInfo(cultureName, false);
+            var date = new DateTime(2019, 1, 2, 1, 2, 3);
+            var expectedResult = "System.DateTime: " + date.ToString(culture);
+
+            Assert.AreEqual(expectedResult,
+                RunInCulture(culture, () =>
+                {
+                    var a = (OneOf<string, DateTime>)date;
+                    return a.ToString();
+                }));
         }
 
         [Test]
@@ -70,7 +80,7 @@ namespace OneOf.Tests
         {
             OneOf<OneOf<string, bool>, OneOf<bool, string>> nestedType = (OneOf<string, bool>)true;
 
-            Assert.AreEqual("OneOf.OneOf`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]: System.Boolean: True", nestedType.ToString());
+            Assert.AreEqual($"{typeof(OneOf<string, bool>).FullName}: System.Boolean: True", nestedType.ToString());
         }
     }
 }

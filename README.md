@@ -1,16 +1,20 @@
-# OneOf [![NuGet](https://img.shields.io/nuget/v/OneOf?logo=nuget)](https://www.nuget.org/packages/OneOf/) [![GitHub](https://img.shields.io/github/license/mcintyre321/OneOf)](licence.md)
+# Vaerktojer.OneOf
 
 > "Ah! It's like a compile time checked switch statement!" - Mike Giorgaras
 
-## Getting Started
+This maintained fork targets .NET 8 and .NET 10. It keeps the `OneOf` namespace and public API while publishing under separate package IDs:
 
-> `install-package OneOf`
+- `Vaerktojer.OneOf` for unions with one to nine alternatives
+- `Vaerktojer.OneOf.Extended` for unions with 10 to 32 alternatives
+- `Vaerktojer.OneOf.SourceGenerator` for generated `OneOfBase` types
 
-This library provides F# style ~discriminated~ unions for C#, using a custom type `OneOf<T0, ... Tn>`. An instance of this type holds a single value, which is one of the types in its generic argument list.
+## Getting started
 
-I can't encourage you enough to give it a try! Due to exhaustive matching DUs provide an alternative to polymorphism when you want to have a method with guaranteed behaviour-per-type (i.e. adding an abstract method on a base type, and then implementing that method in each type). It's a really powerful tool, ask any f#/Scala dev! :)
+```shell
+dotnet add package Vaerktojer.OneOf
+```
 
-PS If you like OneOf, you might want to check out [ValueOf](https://github.com/mcintyre321/valueof), for one-line Value Object Type definitions.
+The library provides discriminated unions for C# through `OneOf<T0, ... Tn>`. Each instance contains one value whose type is one of its generic arguments. `Match` and `Switch` require a handler for every alternative.
 
 ## Use cases
 
@@ -22,8 +26,8 @@ The most frequent use case is as a return value, when you need to return differe
 public OneOf<User, InvalidName, NameTaken> CreateUser(string username)
 {
     if (!IsValid(username)) return new InvalidName();
-    var user = _repo.FindByUsername(username);
-    if(user != null) return new NameTaken();
+    var existingUser = _repo.FindByUsername(username);
+    if (existingUser != null) return new NameTaken();
     var user = new User(username);
     _repo.Save(user);
     return user;
@@ -47,42 +51,33 @@ public IActionResult Register(string username)
 }
 ```
 
-#### As an 'Option' Type
+#### As an option type
 
-It's simple to use OneOf as an `Option` type - just declare a `OneOf<Something, None>`. OneOf comes with a variety of useful Types in the `OneOf.Types` namespace, including  `Yes`, `No`, `Maybe`, `Unknown`, `True`, `False`, `All`, `Some`, and `None`.
+Use `OneOf<Something, None>` as an option type. The `OneOf.Types` namespace includes `Yes`, `No`, `Maybe`, `Unknown`, `True`, `False`, `All`, `Some`, and `None`.
 
 #### Benefits
 
-- True strongly typed method signature
-  - No need to return a custom result base type e.g `IActionResult`, or even worse, a non-descriptive type (e.g. object)
-  - The method signature accurately describes all the potential outcomes, making it easier for consumers to understand the code
-  - Method consumer HAS to handle all cases (see 'Matching', below)
-- You can avoid using ["Exceptions for control flow"](http://softwareengineering.stackexchange.com/questions/189222/are-exceptions-as-control-flow-considered-a-serious-antipattern-if-so-why) antipattern by returning custom Typed error objects
-  
+- The method signature describes every possible result.
+- Callers must handle every case.
+- Typed error values avoid using exceptions for expected control flow.
+
 ### As a method parameter value
 
-You can use also use `OneOf` as a parameter type, allowing a caller to pass different types without requiring additional overloads. This might not seem that useful for a single parameter, but if you have multiple parameters, the number of overloads required increases rapidly.
+You can also use `OneOf` as a parameter type, allowing a caller to pass different types without additional overloads.
 
 ```csharp
 public void SetBackground(OneOf<string, ColorName, Color> backgroundColor) { ... }
 
-//The method above can be called with either a string, a ColorName enum value or a Color instance.
+// Accepts a string, a ColorName value, or a Color instance.
 ```
 
 ## Matching
 
 You use the `TOut Match(Func<T0, TOut> f0, ... Func<Tn,TOut> fn)` method to get a value out. Note how the number of handlers matches the number of generic arguments.
 
-### Advantages over `switch` or `if` or `exception` based control flow:
+### Advantages over `switch`, `if`, or exception-based control flow
 
-This has a major advantage over a switch statement, as it
-
-- requires every parameter to be handled
-- No fallback - if you add another generic parameter, you HAVE to update all the calling code to handle your changes.
-
-    In brown-field code-bases this is incredibly useful, as the default handler is often a runtime `throw NotImplementedException`, or behaviour that wouldn't suit the new result type.
-
-E.g.
+Every alternative requires a handler. Adding another generic argument produces compiler errors at call sites that have not handled it.
 
 ```csharp
 OneOf<string, ColorName, Color> backgroundColor = ...;
@@ -94,13 +89,13 @@ Color c = backgroundColor.Match(
 _window.BackgroundColor = c;
 ```
 
-There is also a .Switch method, for when you aren't returning a value:
+Use `.Switch` when the handlers do not return a value:
 
 ```csharp
 OneOf<string, DateTime> dateValue = ...;
 dateValue.Switch(
     str => AddEntry(DateTime.Parse(str), foo),
-    int => AddEntry(int, foo)
+    date => AddEntry(date, foo)
 );
 ```
 
@@ -120,7 +115,7 @@ The return value indicates if the OneOf contains a T𝑥 or not. If so, then `va
 ```csharp
 IActionResult Get(string id)
 {
-    OneOf<Thing, NotFound, Error> thingOrNotFoundOrError = GetThingFromDb(string id);
+    OneOf<Thing, NotFound, Error> thingOrNotFoundOrError = GetThingFromDb(id);
 
     if (thingOrNotFoundOrError.TryPickT1(out NotFound notFound, out var thingOrError)) //thingOrError is a OneOf<Thing, Error>
       return StatusCode(404);
@@ -135,7 +130,7 @@ IActionResult Get(string id)
 }
 ```
 
-### Reusable OneOf Types using OneOfBase
+### Reusable OneOf types using OneOfBase
 
 You can declare a OneOf as a type, either for reuse of the type, or to provide additional members, by inheriting from `OneOfBase`. The derived class will inherit the `.Match`, `.Switch`, and `.TryPick𝑥` methods.
 
@@ -169,12 +164,13 @@ Console.WriteLine(x.TryGetNumber().isNumber);
 // prints False
 ```
 
-### OneOfBase Source Generation 
+### OneOfBase source generation
 
-You can automatically generate `OneOfBase` hierarchies using `GenerateOneOfAttribute` and partial class that extends `OneOfBase` using
-a Source Generator (thanks to @romfir for the contribution :D). Install it via
+You can generate the `OneOfBase` constructor and conversions for a partial class marked with `GenerateOneOfAttribute`:
 
-> Install-Package OneOf.SourceGenerator
+```shell
+dotnet add package Vaerktojer.OneOf.SourceGenerator
+```
 
 and then define a stub like so:
 
@@ -188,12 +184,39 @@ During compilation the source generator will produce a class implementing the On
 ```csharp
 public partial class StringOrNumber
 {
-	public StringOrNumber(OneOf.OneOf<System.String, System.Int32> _) : base(_) { }
+    public StringOrNumber(global::OneOf.OneOf<string, int> _) : base(_) { }
 
-	public static implicit operator StringOrNumber(System.String _) => new StringOrNumber(_);
-	public static explicit operator System.String(StringOrNumber _) => _.AsT0;
+    public static implicit operator StringOrNumber(string _) => new StringOrNumber(_);
+    public static explicit operator string(StringOrNumber _) => _.AsT0;
 
-	public static implicit operator StringOrNumber(System.Int32 _) => new StringOrNumber(_);
-	public static explicit operator System.Int32(StringOrNumber _) => _.AsT1;
+    public static implicit operator StringOrNumber(int _) => new StringOrNumber(_);
+    public static explicit operator int(StringOrNumber _) => _.AsT1;
 }
 ```
+
+## Development
+
+The repository uses the .NET 10 SDK and tests the libraries on .NET 8 and .NET 10.
+
+```shell
+dotnet restore OneOf.slnx
+dotnet build OneOf.slnx --configuration Release --no-restore
+dotnet test OneOf.slnx --configuration Release --no-build --no-restore
+```
+
+The runtime union implementations are generated and checked in. Regenerate them after changing `Generator/Program.cs`, then confirm the generated files are unchanged or commit the intended diff:
+
+```shell
+dotnet run --project Generator/Generator.csproj --configuration Release -- .
+git diff --exit-code -- OneOf/*.generated.cs OneOf.Extended/*.generated.cs
+```
+
+Create the three packages locally with:
+
+```shell
+dotnet pack OneOf/OneOf.csproj --configuration Release --output artifacts
+dotnet pack OneOf.Extended/OneOf.Extended.csproj --configuration Release --output artifacts
+dotnet pack OneOf.SourceGenerator/OneOf.SourceGenerator.csproj --configuration Release --output artifacts
+```
+
+The packages start at version `0.0.1`. Publishing is manual; CI uploads package files as workflow artifacts.

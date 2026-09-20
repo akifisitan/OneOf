@@ -1,0 +1,20 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.0.1</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <Authors>akifisitan</Authors>
+    <Company>Vaerktojer</Company>
+    <Product>Vaerktojer.OneOf</Product>
+    <Copyright>Copyright (c) 2016 Harry McIntyre; Copyright (c) 2026 akifisitan</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/akifisitan/OneOf</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/akifisitan/OneOf.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>
